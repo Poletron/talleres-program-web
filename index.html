@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>-- Batalla Naval--</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav> 
+            <ul>
+                <li>
+                    <input type="text">
+                </li>
+                <li>
+                    <button>Ingresar</button>
+                </li>
+                <li>
+                    <button>Jugar</button>
+                </li>
+            </ul>
+            <button>
+                Instrucciones
+            </button>
+        </nav>
+    </header>
+        <main>
+            <aside>
+                <ul>
+                    <li>Portaaviones</li>
+                    <li>Acorazado</li>
+                    <li>Crucero</li>
+                    <li>Submarino</li>
+                    <li>Destructor</li>
+                </ul>
+            </aside>
+            <main>
+                <div class="tabla" id="tabla-jugador">
+                    <div class="row">
+                        <div></div>
+                        <div>1</div>
+                        <div>2</div>
+                        <div>3</div>
+                        <div>4</div>
+                        <div>5</div>
+                        <div>6</div>
+                        <div>7</div>
+                        <div>8</div>
+                    </div>
+                    <div class="row">
+                        <div>A</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    
+                    <div class="row">
+                        <div>B</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    <div class="row">
+                        <div>C</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    <div class="row">
+                        <div>D</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    <div class="row">
+                        <div>E</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    <div class="row">
+                        <div>F</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    <div class="row">
+                        <div>G</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    <div class="row">
+                        <div>H</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                </div>
+                <div class="tabla" id="tabla-oponente">
+                    <div class="row">
+                        <div></div>
+                        <div>1</div>
+                        <div>2</div>
+                        <div>3</div>
+                        <div>4</div>
+                        <div>5</div>
+                        <div>6</div>
+                        <div>7</div>
+                        <div>8</div>
+                    </div>
+                    <div class="row">
+                        <div>A</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    
+                    <div class="row">
+                        <div>B</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    <div class="row">
+                        <div>C</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    <div class="row">
+                        <div>D</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    <div class="row">
+                        <div>E</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    <div class="row">
+                        <div>F</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    <div class="row">
+                        <div>G</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                    <div class="row">
+                        <div>H</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>
+                        <div>x</div>    
+                    </div>
+                </div>
+            </main>
+        </main>
+</body>
+
+</html>
