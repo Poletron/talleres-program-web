@@ -5,243 +5,593 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>-- Batalla Naval--</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script> 
+    
 </head>
-<body>
-    <header>
-        <nav> 
-            <ul>
+<body class="bg-gray-100 text-gray-800">
+    <header class="bg-gray-800 text-white p-4">
+        <nav class="container mx-auto flex justify-between items-center">
+            <ul class="flex space-x-4">
                 <li>
-                    <input type="text">
+                    <input type="text" class="p-2 rounded">
                 </li>
                 <li>
-                    <button>Ingresar</button>
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Ingresar</button>
                 </li>
                 <li>
-                    <button>Jugar</button>
+                    <button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Jugar</button>
+                </li>
+                <li>
+                    <button class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+                        <a href="#instrucciones">Instrucciones</a>
+                    </button>
                 </li>
             </ul>
-            <button>
-                Instrucciones
-            </button>
         </nav>
     </header>
-        <main>
-            <aside>
-                <ul>
-                    <li>Portaaviones</li>
-                    <li>Acorazado</li>
-                    <li>Crucero</li>
-                    <li>Submarino</li>
-                    <li>Destructor</li>
-                </ul>
-            </aside>
-            <main>
-                <div class="tabla" id="tabla-jugador">
-                    <div class="row">
-                        <div></div>
-                        <div>1</div>
-                        <div>2</div>
-                        <div>3</div>
-                        <div>4</div>
-                        <div>5</div>
-                        <div>6</div>
-                        <div>7</div>
-                        <div>8</div>
-                    </div>
-                    <div class="row">
-                        <div>A</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    
-                    <div class="row">
-                        <div>B</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    <div class="row">
-                        <div>C</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    <div class="row">
-                        <div>D</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    <div class="row">
-                        <div>E</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    <div class="row">
-                        <div>F</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    <div class="row">
-                        <div>G</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    <div class="row">
-                        <div>H</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
+    <main class="container mx-auto p-4 flex flex-col md:flex-row">
+        <aside class="bg-white p-4 rounded shadow-md w-full md:w-1/4 mb-4 md:mb-0">
+            <ul class="space-y-2">
+                <li class="p-2 bg-gray-200 rounded">Portaaviones</li>
+                <li class="p-2 bg-gray-200 rounded">Acorazado</li>
+                <li class="p-2 bg-gray-200 rounded">Crucero</li>
+                <li class="p-2 bg-gray-200 rounded">Submarino</li>
+                <li class="p-2 bg-gray-200 rounded">Destructor</li>
+            </ul>
+        </aside>
+        <section class="flex-1 bg-white p-4 rounded shadow-md overflow-x-auto">
+            <div class="tabla min-w-max" id="tabla-jugador-1">
+                <div class="row grid grid-cols-10 gap-1">
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                    <div>6</div>
+                    <div>7</div>
+                    <div>8</div>
+                    <div>9</div>
+                    <div>10</div>
                 </div>
-                <div class="tabla" id="tabla-oponente">
-                    <div class="row">
-                        <div></div>
-                        <div>1</div>
-                        <div>2</div>
-                        <div>3</div>
-                        <div>4</div>
-                        <div>5</div>
-                        <div>6</div>
-                        <div>7</div>
-                        <div>8</div>
-                    </div>
-                    <div class="row">
-                        <div>A</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    
-                    <div class="row">
-                        <div>B</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    <div class="row">
-                        <div>C</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    <div class="row">
-                        <div>D</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    <div class="row">
-                        <div>E</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    <div class="row">
-                        <div>F</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    <div class="row">
-                        <div>G</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
-                    <div class="row">
-                        <div>H</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>
-                        <div>x</div>    
-                    </div>
+                <div class="row grid grid-cols-10 gap-1">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
                 </div>
-            </main>
+                <div class="row grid grid-cols-10 gap-1">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row grid grid-cols-10 gap-1">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row grid grid-cols-10 gap-1">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row grid grid-cols-10 gap-1">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row grid grid-cols-10 gap-1">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row grid grid-cols-10 gap-1">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row grid grid-cols-10 gap-1">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row grid grid-cols-10 gap-1">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row grid grid-cols-10 gap-1">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>  
+            </div>
+            
+            <div class="tabla" id="tabla-jugador-2">
+                <div class="row">
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                    <div>6</div>
+                    <div>7</div>
+                    <div>8</div>
+                    <div>9</div>
+                    <div>10</div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            
+            <div class="tabla" id="tabla-jugador-3">
+                <div class="row">
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                    <div>6</div>
+                    <div>7</div>
+                    <div>8</div>
+                    <div>9</div>
+                    <div>10</div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+            
+            <div class="tabla" id="tabla-jugador-4">
+                <div class="row">
+                    <div>1</div>
+                    <div>2</div>
+                    <div>3</div>
+                    <div>4</div>
+                    <div>5</div>
+                    <div>6</div>
+                    <div>7</div>
+                    <div>8</div>
+                    <div>9</div>
+                    <div>10</div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+                <div class="row">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                </div>
+            </div>
+
         </main>
+    </main>
+    <footer id="instrucciones" class="bg-gray-800 text-white p-4 mt-4">
+        <h2 class="text-xl mb-2">Instrucciones del Juego</h2>
+        <ol class="list-decimal list-inside">
+            <li>El juego se juega en una cuadrícula de 10x10.</li>
+            <li>Cada jugador tiene una flota de barcos que debe colocar en su cuadrícula.</li>
+            <li>Los barcos pueden colocarse horizontal o verticalmente, pero no diagonalmente.</li>
+            <li>Los jugadores se turnan para disparar a las coordenadas de la cuadrícula del oponente.</li>
+            <li>El objetivo es hundir todos los barcos del oponente antes de que hundan los tuyos.</li>
+        </ol>
+    </footer>
 </body>
 
 </html>

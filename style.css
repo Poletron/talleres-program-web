@@ -1,142 +1,144 @@
-/* http://meyerweb.com/eric/tools/css/reset/ 
-   v2.0 | 20110126
-   License: none (public domain)
-*/
-
-html, body, div, span, applet, object, iframe,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-a, abbr, acronym, address, big, cite, code,
-del, dfn, em, img, ins, kbd, q, s, samp,
-small, strike, strong, sub, sup, tt, var,
-b, u, i, center,
-dl, dt, dd, ol, ul, li,
-fieldset, form, label, legend,
-table, caption, tbody, tfoot, thead, tr, th, td,
-article, aside, canvas, details, embed, 
-figure, figcaption, footer, header, hgroup, 
-menu, nav, output, ruby, section, summary,
-time, mark, audio, video {
-	margin: 0;
-	padding: 0;
-	border: 0;
-	font-size: 100%;
-	font: inherit;
-	vertical-align: baseline;
-}
-/* HTML5 display-role reset for older browsers */
-article, aside, details, figcaption, figure, 
-footer, header, hgroup, menu, nav, section {
-	display: block;
-}
-body {
-	line-height: 1;
-}
-ol, ul {
-	list-style: none;
-}
-blockquote, q {
-	quotes: none;
-}
-blockquote:before, blockquote:after,
-q:before, q:after {
-	content: '';
-	content: none;
-}
-table {
-	border-collapse: collapse;
-	border-spacing: 0;
-}
-
-
-
-
-body{
-    font-family: Arial, sans-serif;
+/* style.css */
+/* Reset some default styles */
+body, h1, h2, h3, h4, h5, h6, p, ul, li, nav, header, main, aside, button, input {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
-body > main{
-    padding-top: 16px;
+/* General body styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    color: #333;
 }
 
-nav{
+/* Header styling */
+header {
     background-color: #333;
     color: #fff;
-    padding: 10px;
-    display: flex;
+    padding: 10px 0;
 }
 
-nav ul{
+header nav ul {
     list-style: none;
-    padding: 0;
-}
-nav li{
-    display: inline-flex;
-    margin-right: 10px;
-}
-
-nav > button{
-    margin-left: auto;
-    margin-right: 10px;
-    padding: 0px 10px;
-}
-
-aside{
     display: flex;
-    width: 30%;
-    float: left;
-}
-
-aside ul{
-    flex: auto;
-    list-style: none;
-    padding: 0;
-}
-
-aside li{
-    display: flex;
-    flex: auto;
-    border: 1px solid #ccc;
-    padding: 10px;
-    background-color: #f4f4f4;
-}
-main main{
-    display: flex;
-    width: 70%;
-}
-
-
-
-a{
-    color: #000;
-    text-decoration: none;
-
-}
-
-.row {
-    display: flex;
-}
-
-.row div {
-    width: 40px;
-    height: 40px;
-    display: flex;
+    
     align-items: center;
-    justify-content: center;
-    border: 1px solid #000;
-    background-color: #f1f1f1;
 }
 
-.row div:nth-child(odd) {
-    background-color: #e2e2e2;
+header nav ul li {
+    margin: 0 10px;
 }
 
-.tabla{
-    margin: auto;
+header nav ul li input[type="text"] {
+    padding: 5px;
+    border: none;
+    border-radius: 3px;
+}
+
+header nav ul li button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    background-color: #555;
+    color: #fff;
+    cursor: pointer;
+}
+header nav ul li button a{
+    color: #fff !important;
+}
+
+header nav ul li button:hover {
+    background-color: #777;
+}
+
+header nav button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    background-color: #555;
+    color: #fff;
+    cursor: pointer;
+    margin-left: 20px;
+}
+
+header nav button:hover {
+    background-color: #777;
+}
+
+/* Main content styling */
+main {
     display: flex;
-    flex-wrap: wrap;
-    width: 30%;
+    padding: 20px;
 }
 
+/* Sidebar styling */
+aside {
+    width: 200px;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
+aside ul {
+    list-style: none;
+}
+
+aside ul li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Game board styling */
+.tabla {
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 5px;
+    margin-left: 20px;
+}
+
+.tabla .row {
+    display: contents;
+}
+
+.tabla .row div {
+    width: 30px;
+    height: 30px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+
+.tabla .row div:hover {
+    background-color: #eee;
+}
+
+/* Footer styling */
+footer {
+    background-color: #333;
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    border-top: 5px solid #555;
+    margin-top: 20px;
+}
+
+footer h2 {
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+footer ol {
+    list-style: decimal inside;
+    padding-left: 0;
+}
+
+footer ol li {
+    margin: 10px 0;
+    text-align: left;
+}
