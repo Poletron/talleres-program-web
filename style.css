@@ -1,19 +1,15 @@
-/* style.css */
-/* Reset some default styles */
 body, h1, h2, h3, h4, h5, h6, p, ul, li, nav, header, main, aside, button, input {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* General body styling */
 body {
     font-family: Arial, sans-serif;
     background-color: #f0f0f0;
     color: #333;
 }
 
-/* Header styling */
 header {
     background-color: #333;
     color: #fff;
@@ -67,13 +63,13 @@ header nav button:hover {
     background-color: #777;
 }
 
-/* Main content styling */
+/* Main */
 main {
     display: flex;
     padding: 20px;
 }
 
-/* Sidebar styling */
+/* Sidebar */
 aside {
     width: 200px;
     background-color: #fff;
@@ -91,10 +87,7 @@ aside ul li {
     border-bottom: 1px solid #ddd;
 }
 
-/* Game board styling */
-
-
-/* Footer styling */
+/* Footer  */
 footer {
     background-color: #333;
     color: #fff;
