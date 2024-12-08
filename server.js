@@ -57,6 +57,9 @@ function handleClientMessage(ws, data) {
         case 'getBoardState':
             sendBoardState(ws);
             break;
+        case 'getBoardStateForOpponent':
+            sendOpponentBoardState(ws, data.opponent);
+            break;
         default:
             console.log('Unknown message type:', data.type);
     }
@@ -93,7 +96,6 @@ function handleAttack(ws, opponentName, position) {
     if (attackerName && players[opponentName]) {
         if (isPlayerTurn(attackerName)) {
             processAttack(attackerName, opponentName, position);
-            advanceTurn();
         } else {
             ws.send(JSON.stringify({ type: 'invalidTurn', message: 'No es tu turno.' }));
         }
@@ -102,39 +104,92 @@ function handleAttack(ws, opponentName, position) {
 
 // Process the attack and notify players
 function processAttack(attacker, defender, position) {
-    const hit = checkHit(defender, position);
-    updateBoardState(defender, position, hit ? 'hit' : 'miss');
+    const result = checkHit(defender, position);
+    updateBoardState(defender, position, result.hit ? 'hit' : 'miss');
 
     // Notify defender
     players[defender].ws.send(JSON.stringify({
         type: 'attackResult',
         position,
-        hit,
+        hit: result.hit,
         player: attacker,
-        attackedPlayer: defender
+        attackedPlayer: defender,
+        shipName: result.shipName || null
     }));
 
     // Notify attacker
     players[attacker].ws.send(JSON.stringify({
         type: 'attackResult',
         position,
-        hit,
+        hit: result.hit,
         player: attacker,
-        attackedPlayer: defender
+        attackedPlayer: defender,
+        shipName: result.shipName || null
     }));
 
-    console.log(`Player ${attacker} attacked ${defender} at position [${position[0]}, ${position[1]}] and ${hit ? 'hit' : 'missed'}`);
+    console.log(`Player ${attacker} attacked ${defender} at position [${position[0]}, ${position[1]}] and ${result.hit ? 'hit' : 'missed'}`);
 
-    // Update board states
-    sendBoardState(players[defender].ws);
-    sendBoardState(players[attacker].ws);
+    // Check if defender has lost all ships
+    if (isPlayerDefeated(defender)) {
+        // Notify defender of defeat
+        players[defender].ws.send(JSON.stringify({
+            type: 'gameOver',
+            result: 'defeat'
+        }));
+
+        // Remove the defeated player from the game
+        delete players[defender];
+        delete boardStates[defender];
+
+        // Check if only one player remains
+        if (Object.keys(players).length === 1) {
+            const winner = Object.keys(players)[0];
+            // Notify winner of victory
+            players[winner].ws.send(JSON.stringify({
+                type: 'gameOver',
+                result: 'victory'
+            }));
+            console.log(`Player ${winner} has won the game!`);
+
+            // Optionally, you can reset the game state here
+        } else {
+            // Notify remaining players about the defeated player
+            notifyAllPlayers({ type: 'playerDefeated', playerName: defender });
+        }
+    } else {
+        // Advance the turn only if the game is not over
+        advanceTurn();
+    }
+}
+
+// Function to check if a player has lost all ships
+function isPlayerDefeated(playerName) {
+    const playerShips = players[playerName].ships;
+    for (let ship of playerShips) {
+        if (!ship.hits || ship.hits.length < ship.positions.length) {
+            // Ship is not fully sunk
+            return false;
+        }
+    }
+    // All ships are sunk
+    return true;
 }
 
 // Check if the attack is a hit
 function checkHit(defender, position) {
-    return players[defender].ships.some(ship =>
-        ship.positions.some(pos => pos[0] === position[0] && pos[1] === position[1])
-    );
+    for (let ship of players[defender].ships) {
+        for (let pos of ship.positions) {
+            if (pos[0] === position[0] && pos[1] === position[1]) {
+                // Record that this part of the ship has been hit
+                if (!ship.hits) {
+                    ship.hits = [];
+                }
+                ship.hits.push(position);
+                return { hit: true, shipName: ship.name };
+            }
+        }
+    }
+    return { hit: false };
 }
 
 // Update the board state after an attack
@@ -156,6 +211,20 @@ function sendBoardState(ws) {
     const playerName = getPlayerName(ws);
     if (playerName) {
         ws.send(JSON.stringify({ type: 'boardState', boardState: boardStates[playerName] }));
+    }
+}
+
+// Function to send the board state of a specific opponent to the requester
+function sendOpponentBoardState(ws, opponentName) {
+    const requesterName = getPlayerName(ws);
+    if (requesterName && players[opponentName]) {
+        ws.send(JSON.stringify({
+            type: 'boardStateForOpponent',
+            boardState: boardStates[opponentName],
+            opponent: opponentName
+        }));
+    } else {
+        ws.send(JSON.stringify({ type: 'error', message: 'Oponente no encontrado.' }));
     }
 }
 

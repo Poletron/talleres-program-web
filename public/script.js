@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameStarted = false;
     let currentPlayerTurn = '';
     const playerShipsPositions = [];
+    const playerShipsStatus = {}; // Add this to track player's ship statuses
     const opponents = [];
     let currentOpponentIndex = 0;
 
@@ -89,6 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'opponents':
                 updateOpponentsList(data.opponents);
+                initializeDefaultOpponent();
                 break;
             case 'newPlayer':
                 opponents.push(data.playerName);
@@ -115,9 +117,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 gameStarted = true;
                 renderAside();
+                showPlayerAndOpponentNames();
                 break;
             case 'invalidTurn':
                 showAlert(data.message);
+                break;
+            case 'gameOver':
+                handleGameOver(data.result);
+                break;
+            case 'playerDefeated':
+                handlePlayerDefeated(data.playerName);
                 break;
             default:
                 console.log('Unknown message type:', data.type);
@@ -132,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Handle attack results
-    function handleAttackResult({ position, hit, player, attackedPlayer }) {
+    function handleAttackResult({ position, hit, player, attackedPlayer, shipName }) {
         const [row, col] = position;
         if (player === playerName) {
             updateOpponentBoard(row, col, hit);
@@ -140,7 +149,22 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (attackedPlayer === playerName) {
             updatePlayerBoard(row, col, hit);
             updateLastAttackInfo(`${player} te atacó en la posición [${row + 1}, ${col + 1}] y ${hit ? 'acertó' : 'falló'}`);
+            if (hit && shipName) {
+                // Update player's ship status
+                if (!playerShipsStatus[shipName]) {
+                    playerShipsStatus[shipName] = { hits: 0, size: getShipSize(shipName) };
+                }
+                playerShipsStatus[shipName].hits += 1;
+                // Update the aside to reflect the change
+                renderAside();
+            }
         }
+    }
+
+    // Add helper function to get ship size by name
+    function getShipSize(name) {
+        const ship = ships.find(s => s.name === name);
+        return ship ? ship.size : 0;
     }
 
     // Update player's own board with attack results
@@ -195,14 +219,20 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     function renderAside() {
-        const playerShips = ships.map(ship => `
-            <li class="p-2 bg-gray-200 rounded flex flex-col xl:flex-row items-start xl:items-center justify-between cursor-pointer" data-ship="${ship.name}" draggable="true">
-                <span>${ship.name}</span>
-                <div class="flex space-x-1 mt-2 xl:mt-0 xl:ml-auto">
-                    ${'<div class="w-4 h-4 bg-blue-500 rounded-full"></div>'.repeat(ship.size)}
-                </div>
-            </li>
-        `).join('');
+        const playerShips = ships.map(ship => {
+            const hits = playerShipsStatus[ship.name] ? playerShipsStatus[ship.name].hits : 0;
+            const circles = Array.from({ length: ship.size }, (_, i) => `
+                <div class="w-4 h-4 ${i < hits ? 'bg-black' : 'bg-blue-500'} rounded-full"></div>
+            `).join('');
+            return `
+                <li class="p-2 bg-gray-200 rounded flex flex-col xl:flex-row items-start xl:items-center justify-between">
+                    <span>${ship.name}</span>
+                    <div class="flex space-x-1 mt-2 xl:mt-0 xl:ml-auto">
+                        ${circles}
+                    </div>
+                </li>
+            `;
+        }).join('');
 
         const opponentShips = ships.map(ship => `
             <li class="p-2 bg-gray-200 rounded flex flex-col xl:flex-row items-start xl:items-center justify-between">
@@ -224,16 +254,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button id="random-deploy-button" class="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded w-full">Desplegar Aleatoriamente</button>
             ` : ''}
             <div id="opponent-section" class="hidden">
-                <h2 class="text-xl font-bold mb-2 flex justify-between items-center">
-                    ${opponents.length > 1 ? '<button id="prev-opponent" class="text-gray-500">&lt;</button>' : ''}
+                <h2 class="text-xl font-bold mb-2 flex justify-center items-center">
+                    ${opponents.length > 1 ? '<button id="prev-opponent" class="text-gray-500 mr-2">&lt;</button>' : ''}
                     ${opponentName}
-                    ${opponents.length > 1 ? '<button id="next-opponent" class="text-gray-500">&gt;</button>' : ''}
+                    ${opponents.length > 1 ? '<button id="next-opponent" class="text-gray-500 ml-2">&gt;</button>' : ''}
                 </h2>
                 <ul class="space-y-2">${opponentShips}</ul>
             </div>
-            <h3 class="text-lg font-bold mt-4">Jugadores Conectados</h3>
+            <h3 class="text-lg font-bold mt-4">Oponentes</h3>
             <ul id="players-list" class="space-y-2">
-                ${opponents.map(opponent => `<li>${opponent}</li>`).join('')}
+                ${opponents.map(opponent => `<li class="opponent-item cursor-pointer">${opponent}</li>`).join('')}
             </ul>
             <h3 class="text-lg font-bold mt-4">Turno Actual</h3>
             <p>${currentPlayerTurn}</p>
@@ -283,7 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('deploy-button').onclick = function() {
                 if (playerShipsPositions.length === ships.length) {
                     socket.send(JSON.stringify({ type: 'deploy', ships: playerShipsPositions }));
-                    showAlert('Barcos desplegados correctamente');
+                    // Removed the alert
+                    // showAlert('Barcos desplegados correctamente');
 
                     // Set playerDeployed to true after deploying
                     playerDeployed = true;
@@ -362,6 +393,55 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else {
             renderAttackButton();
+        }
+
+        // Agregar eventos para seleccionar oponentes
+        document.querySelectorAll('.opponent-item').forEach(item => {
+            item.onclick = () => {
+                selectOpponent(item.textContent);
+            };
+        });
+    }
+
+    // Función para seleccionar un oponente
+    function selectOpponent(opponentName) {
+        currentOpponentIndex = opponents.indexOf(opponentName);
+        updateSelectedOpponent();
+    }
+
+    // Función para actualizar la selección de oponente
+    function updateSelectedOpponent() {
+        const selectedOpponent = opponents[currentOpponentIndex];
+        document.getElementById('opponent-name-display').textContent = selectedOpponent;
+
+        // Mostrar/ocultar flechas de navegación
+        if (opponents.length > 1) {
+            document.getElementById('opponent-navigation').innerHTML = `
+                <button id="prev-opponent" class="text-gray-500">&lt;</button>
+                <button id="next-opponent" class="text-gray-500">&gt;</button>
+            `;
+            document.getElementById('prev-opponent').onclick = () => {
+                currentOpponentIndex = (currentOpponentIndex - 1 + opponents.length) % opponents.length;
+                updateSelectedOpponent();
+            };
+
+            document.getElementById('next-opponent').onclick = () => {
+                currentOpponentIndex = (currentOpponentIndex + 1) % opponents.length;
+                updateSelectedOpponent();
+            };
+        } else {
+            document.getElementById('opponent-navigation').innerHTML = '';
+        }
+
+        // Actualizar tablero 2
+        socket.send(JSON.stringify({ type: 'getBoardStateForOpponent', opponent: selectedOpponent }));
+    }
+
+    // Inicializar selección de oponente por defecto
+    function initializeDefaultOpponent() {
+        if (opponents.length > 0) {
+            currentOpponentIndex = 0;
+            updateSelectedOpponent();
         }
     }
 
@@ -656,6 +736,67 @@ document.addEventListener('DOMContentLoaded', () => {
         if (waitingModal) {
             waitingModal.remove();
             waitingModal = null;
+        }
+    }
+
+    // Function to handle game over event
+    function handleGameOver(result) {
+        if (result === 'victory') {
+            showGameOverScreen('¡Has ganado el juego!');
+        } else if (result === 'defeat') {
+            showGameOverScreen('Has sido derrotado.');
+        }
+    }
+
+    // Function to handle when another player is defeated
+    function handlePlayerDefeated(playerName) {
+        showAlert(`El jugador ${playerName} ha sido derrotado.`);
+        opponents.splice(opponents.indexOf(playerName), 1);
+        renderAside();
+    }
+
+    // Function to show the game over screen
+    function showGameOverScreen(message) {
+        const gameOverModal = createModal('game-over-modal', `
+            <h2>${message}</h2>
+            <button id="restart-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4">Jugar de Nuevo</button>
+        `);
+        document.getElementById('restart-button').onclick = () => {
+            // Reload the page to restart the game
+            location.reload();
+        };
+    }
+
+    // Function to show player and opponent names above the boards
+    function showPlayerAndOpponentNames() {
+        const playerNameDisplay = document.createElement('h2');
+        playerNameDisplay.id = 'player-name-display';
+        playerNameDisplay.className = 'text-center font-bold mb-2';
+        playerNameDisplay.textContent = playerName;
+        document.querySelector('#tablero-1').insertAdjacentElement('beforebegin', playerNameDisplay);
+
+        const opponentNameDisplay = document.createElement('h2');
+        opponentNameDisplay.id = 'opponent-name-display';
+        opponentNameDisplay.className = 'text-center font-bold mb-2 flex justify-center items-center';
+        opponentNameDisplay.innerHTML = `
+            ${opponents[currentOpponentIndex]}
+            <span id="opponent-navigation" class="ml-2">
+                ${opponents.length > 1 ? '<button id="prev-opponent" class="text-gray-500">&lt;</button>' : ''}
+                ${opponents.length > 1 ? '<button id="next-opponent" class="text-gray-500">&gt;</button>' : ''}
+            </span>
+        `;
+        document.querySelector('#tablero-2').insertAdjacentElement('beforebegin', opponentNameDisplay);
+
+        if (opponents.length > 1) {
+            document.getElementById('prev-opponent').onclick = () => {
+                currentOpponentIndex = (currentOpponentIndex - 1 + opponents.length) % opponents.length;
+                updateSelectedOpponent();
+            };
+
+            document.getElementById('next-opponent').onclick = () => {
+                currentOpponentIndex = (currentOpponentIndex + 1) % opponents.length;
+                updateSelectedOpponent();
+            };
         }
     }
 });
