@@ -20,10 +20,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
-// Default route handler
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
-});
+// Remove or comment out the default route handler
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, 'public/index.html'));
+// });
 
 // WebSocket connection handling
 wss.on('connection', (ws) => {
@@ -68,7 +68,7 @@ function handleClientMessage(ws, data) {
 // Handle player login
 function handleLogin(ws, playerName) {
     console.log(`Player logged in: ${playerName}`);
-    players[playerName] = { ws, ships: [], deployed: false };
+    players[playerName] = { ws, ships: [], deployed: false, attacks: {} };
     boardStates[playerName] = createEmptyBoard();
     sendOpponentsList(ws);
     notifyAllPlayers({ type: 'newPlayer', playerName });
@@ -107,6 +107,12 @@ function processAttack(attacker, defender, position) {
     const result = checkHit(defender, position);
     updateBoardState(defender, position, result.hit ? 'hit' : 'miss');
 
+    // Record the attack
+    if (!players[attacker].attacks[defender]) {
+        players[attacker].attacks[defender] = [];
+    }
+    players[attacker].attacks[defender].push({ position, hit: result.hit });
+
     // Notify defender
     players[defender].ws.send(JSON.stringify({
         type: 'attackResult',
@@ -128,6 +134,17 @@ function processAttack(attacker, defender, position) {
     }));
 
     console.log(`Player ${attacker} attacked ${defender} at position [${position[0]}, ${position[1]}] and ${result.hit ? 'hit' : 'missed'}`);
+
+    // Notify all players about the attack result
+    const attackResultMessage = {
+        type: 'attackResult',
+        position,
+        hit: result.hit,
+        player: attacker,
+        attackedPlayer: defender,
+        shipName: result.shipName || null
+    };
+    notifyAllPlayers(attackResultMessage);
 
     // Check if defender has lost all ships
     if (isPlayerDefeated(defender)) {
@@ -216,15 +233,18 @@ function sendBoardState(ws) {
 
 // Function to send the board state of a specific opponent to the requester
 function sendOpponentBoardState(ws, opponentName) {
-    const requesterName = getPlayerName(ws);
-    if (requesterName && players[opponentName]) {
-        ws.send(JSON.stringify({
-            type: 'boardStateForOpponent',
-            boardState: boardStates[opponentName],
-            opponent: opponentName
-        }));
+    const playerName = getPlayerName(ws);
+    if (playerName && players[opponentName]) {
+        // Collect all attacks on the opponent from all players
+        const attacks = [];
+        for (let attacker in players) {
+            if (players[attacker].attacks[opponentName]) {
+                attacks.push(...players[attacker].attacks[opponentName]);
+            }
+        }
+        ws.send(JSON.stringify({ type: 'opponentBoardState', opponent: opponentName, attacks }));
     } else {
-        ws.send(JSON.stringify({ type: 'error', message: 'Oponente no encontrado.' }));
+        ws.send(JSON.stringify({ type: 'error', message: 'Invalid opponent name' }));
     }
 }
 

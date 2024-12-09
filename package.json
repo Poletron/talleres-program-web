@@ -2,9 +2,9 @@
   "name": "talleres-program-web",
   "version": "1.0.0",
   "description": "",
-  "main": "script.js",
+  "main": "server.js",
   "scripts": {
-    "devstart": "nodemon server.js",
+    "dev": "nodemon server.js",
     "start": "node server.js"
   },
   "repository": {

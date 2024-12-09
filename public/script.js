@@ -82,6 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             case 'attackResult':
                 handleAttackResult(data);
+                // Refresh board 2 for the selected opponent
+                requestOpponentBoardState();
                 break;
             case 'startGame':
                 gameStarted = true;
@@ -104,6 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     showWaitingModal();
                 }
+                // Refresh board 2 for the selected opponent
+                requestOpponentBoardState();
                 break;
             case 'deploymentStatus':
                 // Only show the modal if the player has deployed their ships
@@ -128,6 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'playerDefeated':
                 handlePlayerDefeated(data.playerName);
                 break;
+            case 'opponentBoardState':
+                renderOpponentBoardState(data.attacks);
+                break;
             default:
                 console.log('Unknown message type:', data.type);
         }
@@ -143,12 +150,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle attack results
     function handleAttackResult({ position, hit, player, attackedPlayer, shipName }) {
         const [row, col] = position;
+        let message = `${player} atacó a ${attackedPlayer} en la posición [${row + 1}, ${col + 1}] y ${hit ? 'acertó' : 'falló'}`;
+        updateLastAttackInfo(message);
+
         if (player === playerName) {
             updateOpponentBoard(row, col, hit);
-            updateLastAttackInfo(`Atacaste a ${attackedPlayer} en la posición [${row + 1}, ${col + 1}] y ${hit ? 'acertaste' : 'fallaste'}`);
         } else if (attackedPlayer === playerName) {
             updatePlayerBoard(row, col, hit);
-            updateLastAttackInfo(`${player} te atacó en la posición [${row + 1}, ${col + 1}] y ${hit ? 'acertó' : 'falló'}`);
             if (hit && shipName) {
                 // Update player's ship status
                 if (!playerShipsStatus[shipName]) {
@@ -229,7 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="w-4 h-4 ${i < hits ? 'bg-black' : 'bg-blue-500'} rounded-full"></div>
             `).join('');
             return `
-                <li class="p-2 bg-gray-200 rounded flex flex-col xl:flex-row items-start xl:items-center justify-between">
+                <li class="p-2 bg-gray-200 rounded flex flex-col xl:flex-row items-start xl:items-center justify-between"
+                    data-ship="${ship.name}" draggable="true">
                     <span>${ship.name}</span>
                     <div class="flex space-x-1 mt-2 xl:mt-0 xl:ml-auto">
                         ${circles}
@@ -249,6 +258,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const opponentName = opponents.length > 0 ? opponents[currentOpponentIndex] : 'No hay oponentes disponibles';
 
+        // Update opponents list with highlighting
+        const opponentsList = opponents.map((opponent, index) => `
+            <li class="opponent-item cursor-pointer flex items-center ${index === currentOpponentIndex ? 'bg-blue-200' : ''}">
+                ${opponent}
+                ${index === currentOpponentIndex ? '<span class="ml-2 text-blue-600 font-bold">←</span>' : ''}
+            </li>
+        `).join('');
+
         document.querySelector('aside').innerHTML = `
             <h2 class="text-xl font-bold mb-2">${playerName}</h2>
             <ul class="space-y-2 mb-4">${playerShips}</ul>
@@ -267,7 +284,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <h3 class="text-lg font-bold mt-4">Oponentes</h3>
             <ul id="players-list" class="space-y-2">
-                ${opponents.map(opponent => `<li class="opponent-item cursor-pointer">${opponent}</li>`).join('')}
+                ${opponentsList}
             </ul>
             <h3 class="text-lg font-bold mt-4">Turno Actual</h3>
             <p>${currentPlayerTurn}</p>
@@ -279,6 +296,7 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('aside li').forEach(li => {
                 li.ondragstart = function(event) {
                     selectedShip = ships.find(ship => ship.name === this.dataset.ship);
+                    event.dataTransfer.setData('text/plain', selectedShip.name);
                     const shipDiv = document.createElement('div');
                     shipDiv.className = 'dragging-ship';
                     shipDiv.style.position = 'absolute';
@@ -400,9 +418,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Agregar eventos para seleccionar oponentes
-        document.querySelectorAll('.opponent-item').forEach(item => {
+        document.querySelectorAll('.opponent-item').forEach((item, index) => {
             item.onclick = () => {
-                selectOpponent(item.textContent);
+                selectOpponent(opponents[index]);
             };
         });
     }
@@ -410,6 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Función para seleccionar un oponente
     function selectOpponent(opponentName) {
         currentOpponentIndex = opponents.indexOf(opponentName);
+        renderAside();
         updateSelectedOpponent();
     }
 
@@ -437,8 +456,14 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('opponent-navigation').innerHTML = '';
         }
 
-        // Actualizar tablero 2
-        socket.send(JSON.stringify({ type: 'getBoardStateForOpponent', opponent: selectedOpponent }));
+        // Clear board 2 before requesting new board state
+        const board = document.getElementById('tablero-2');
+        board.querySelectorAll(`.col-span-${boardSize}:not(:first-child) > div`).forEach(cell => {
+            cell.innerHTML = '&nbsp;';
+        });
+
+        // Request opponent's board state
+        requestOpponentBoardState();
     }
 
     // Inicializar selección de oponente por defecto
@@ -502,6 +527,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 cell.ondrop = function(event) {
                     event.preventDefault();
+                    const shipName = event.dataTransfer.getData('text/plain');
+                    selectedShip = ships.find(ship => ship.name === shipName);
                     if (selectedShip) {
                         const cellIndex = Array.from(board.querySelectorAll(`.col-span-${boardSize}:not(:first-child) > div`)).indexOf(this);
                         const row = Math.floor(cellIndex / boardSize);
@@ -576,6 +603,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     const ship = playerShipsPositions.find(ship => ship.positions.some(pos => pos[0] === row && pos[1] === col));
                     if (ship) {
                         selectedShip = ships.find(s => s.name === ship.name);
+
+                        // Set the ship's orientation based on its previous positions
+                        if (ship.positions[0][0] === ship.positions[ship.positions.length - 1][0]) {
+                            isHorizontal = true;
+                        } else {
+                            isHorizontal = false;
+                        }
+
+                        // Update the rotate button text
+                        const rotateButton = document.getElementById('rotate-button');
+                        if (rotateButton) {
+                            rotateButton.textContent = isHorizontal ? 'Rotar (Horizontal)' : 'Rotar (Vertical)';
+                        }
+
+                        // Prepare the drag image
                         const shipDiv = document.createElement('div');
                         shipDiv.className = 'dragging-ship';
                         shipDiv.style.position = 'absolute';
@@ -588,11 +630,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         document.body.appendChild(shipDiv);
                         event.dataTransfer.setDragImage(shipDiv, 0, 0);
 
-                        // Borrar la ubicación anterior del barco
+                        // Set the dragged data
+                        event.dataTransfer.setData('text/plain', selectedShip.name);
+
+                        // Remove the ship's previous positions from the board
                         ship.positions.forEach(([r, c]) => {
-                            board.querySelectorAll(`.col-span-${boardSize}:not(:first-child) > div`)[r * boardSize + c].innerHTML = '&nbsp;';
+                            board.querySelector(`[data-position="${r},${c}"]`).innerHTML = '&nbsp;';
                         });
+
+                        // Remove the ship from playerShipsPositions
                         playerShipsPositions.splice(playerShipsPositions.indexOf(ship), 1);
+
+                        // Change the ship's background color back to gray in the aside
+                        const shipListItem = document.querySelector(`aside li[data-ship="${selectedShip.name}"]`);
+                        if (shipListItem) {
+                            shipListItem.classList.remove('bg-green-200');
+                            shipListItem.classList.add('bg-gray-200');
+                        }
+                    } else {
+                        // Prevent dragging if no ship is selected
+                        event.preventDefault();
                     }
                 };
 
@@ -801,6 +858,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 currentOpponentIndex = (currentOpponentIndex + 1) % opponents.length;
                 updateSelectedOpponent();
             };
+        }
+    }
+
+    // Implement renderOpponentBoardState to update board 2
+    function renderOpponentBoardState(attacks) {
+        // Clear board 2
+        const board = document.getElementById('tablero-2');
+        board.querySelectorAll(`.col-span-${boardSize}:not(:first-child) > div`).forEach(cell => {
+            cell.innerHTML = '&nbsp;';
+        });
+
+        // Render attacks on board 2
+        attacks.forEach(({ position, hit }) => {
+            const [row, col] = position;
+            const cell = board.querySelector(`[data-position="${row},${col}"]`);
+            if (cell) {
+                cell.innerHTML = `<div class="w-4 h-4 ${hit ? 'bg-red-500' : 'bg-gray-500'} rounded-full"></div>`;
+            }
+        });
+    }
+
+    // Add a helper function to request opponent's board state
+    function requestOpponentBoardState() {
+        const selectedOpponent = opponents[currentOpponentIndex];
+        if (selectedOpponent) {
+            socket.send(JSON.stringify({ type: 'getBoardStateForOpponent', opponent: selectedOpponent }));
         }
     }
 });
