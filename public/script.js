@@ -219,6 +219,10 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     function renderAside() {
+        // Obtener el mensaje actual del último ataque
+        const lastAttackInfoElement = document.getElementById('last-attack-info');
+        const lastAttackMessage = lastAttackInfoElement ? lastAttackInfoElement.textContent : 'No hay ataques recientes.';
+        
         const playerShips = ships.map(ship => {
             const hits = playerShipsStatus[ship.name] ? playerShipsStatus[ship.name].hits : 0;
             const circles = Array.from({ length: ship.size }, (_, i) => `
@@ -268,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <h3 class="text-lg font-bold mt-4">Turno Actual</h3>
             <p>${currentPlayerTurn}</p>
             <h3 class="text-lg font-bold mt-4">Último Ataque</h3>
-            <p id="last-attack-info">No hay ataques recientes.</p>
+            <p id="last-attack-info">${lastAttackMessage}</p>
         `;
 
         if (!gameStarted) {
