@@ -12,7 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerShipsStatus = {}; // Add this to track player's ship statuses
     const opponents = [];
     let currentOpponentIndex = 0;
-
+    //gola
+    
     // Variables for modals
     let deploymentModal;
     let waitingModal;
