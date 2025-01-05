@@ -4,7 +4,6 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js",
     "start": "node server.js"
   },
   "repository": {
@@ -17,12 +16,5 @@
   "bugs": {
     "url": "https://github.com/Poletron/talleres-program-web/issues"
   },
-  "homepage": "https://github.com/Poletron/talleres-program-web#readme",
-  "dependencies": {
-    "express": "^4.21.2",
-    "ws": "^8.18.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.7"
-  }
+  "homepage": "https://github.com/Poletron/talleres-program-web#readme"
 }
