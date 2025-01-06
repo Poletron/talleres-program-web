@@ -7,9 +7,29 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script> 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Estilos adicionales si son necesarios */
+        .hidden {
+            display: none;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress {
+            height: 20px;
+            background-color: #76c7c0;
+            width: 0%;
+            transition: width 1s linear;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
     <header class="bg-gray-800 text-white p-4">
+        <!-- Navbar Actual Comentada
         <nav class="container mx-auto p-4 flex flex-wrap items-center justify-between">
             <div id="logo" class="flex items-center">
                 <a href="#" class="text-xl font-bold">Batalla Naval</a>
@@ -43,16 +63,98 @@
                 </ul>
             </div>
         </nav>
+        -->
+
+        <!-- Nueva Navbar Fija en la Parte Superior -->
+        <nav class="fixed top-0 left-0 right-0 bg-gray-800 text-white p-4 flex justify-between items-center z-50">
+            <div id="logo" class="flex items-center">
+                <a href="#" class="text-xl font-bold">Batalla Naval</a>
+            </div>
+            <div id="deployment-buttons" class="space-x-4 hidden">
+                <button id="rotate-button" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+                    Rotar a Horizontal
+                </button>
+                <button id="deploy-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Desplegar
+                </button>
+            </div>
+        </nav>
     </header>
-    <main class="container mx-auto p-4 flex flex-col md:flex-row">
-        <!-- Aside generado dinamicamente con JS -->
-        <aside class="bg-white p-4 rounded shadow-md w-full md:w-1/4 mb-4 md:mb-0">
-            
-        </aside>
-         <!-- Tableros generados dinamicamente con JS -->
-        <section class="container mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div class="grid grid-cols-10 gap-1" id="tablero-1"></div>
-            <div class="grid grid-cols-10 gap-1" id="tablero-2"></div>
+    <main class="container mx-auto p-4 flex flex-col md:flex-row mt-16"> <!-- Añadido mt-16 para compensar la navbar fija -->
+        <!-- Sección para crear o unirse a una sala -->
+        <section id="room-selection" class="w-full md:w-1/2 mx-auto">
+            <h2 class="text-2xl font-bold mb-4 text-center">Crea o unete a una Sala</h2>
+            <div class="flex flex-col space-y-4">
+                <button id="create-room-button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                    Crear Sala
+                </button>
+                <div>
+                    <input type="text" id="join-room-code" class="p-2 border rounded w-full" placeholder="Código de la Sala">
+                    <button id="join-room-button" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2 w-full">
+                        Unirse a Sala
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sala de Espera -->
+        <section id="waiting-room" class="w-full md:w-1/2 mx-auto hidden">
+            <h2 class="text-2xl font-bold mb-4 text-center">Sala de Espera</h2>
+            <p class="text-center">Código de la Sala: <span id="room-code-display" class="font-bold"></span></p>
+            <div class="mt-4">
+                <h3 class="text-xl font-semibold">Jugadores:</h3>
+                <ul id="players-list" class="space-y-2">
+                    <!-- Lista de jugadores -->
+                </ul>
+            </div>
+            <div class="mt-4 flex justify-center space-x-4">
+                <button id="ready-button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                    No Preparado
+                </button>
+                <!-- Nuevo botón para salir de la sala -->
+                <button id="leave-room-button" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                    Salir de la Sala
+                </button>
+            </div>
+            <div class="progress-bar">
+                <div id="timer-bar" class="progress"></div>
+            </div>
+            <p id="timer-text" class="text-center mt-2">Tiempo restante: <span id="time-remaining">60</span> segundos</p>
+            <div class="mt-6">
+                <h3 class="text-lg font-semibold">Instrucciones:</h3>
+                <ol class="list-decimal list-inside space-y-2">
+                    <li>Crear o unirse a una sala usando un código único.</li>
+                    <li>Indicar tu estado de preparación haciendo clic en el botón "No Preparado"/"Preparado".</li>
+                    <li>Esperar a que todos los jugadores estén listos o a que se agote el tiempo para iniciar el juego.</li>
+                </ol>
+            </div>
+        </section>
+
+        <!-- Fase de Despliegue del Juego (actualizado a Game Phase) -->
+        <section id="game-phase" class="w-full hidden flex-grow flex-col md:flex-row">
+            <!-- Aside para mostrar los barcos -->
+            <aside id="boats-aside" class="w-full md:w-1/4 p-4 bg-white shadow rounded">
+                <h3 class="text-xl font-semibold mb-2">Tus Barcos</h3>
+                <ul id="boats-list" class="space-y-2">
+                    <!-- Los barcos se llenarán dinámicamente -->
+                </ul>
+            </aside>
+
+            <!-- Tablero del Jugador -->
+            <div class="w-full md:w-3/4 p-4">
+                <h3 class="text-xl font-semibold mb-2">Tu Tablero</h3>
+                <div id="player-board" class="grid grid-cols-10 gap-1">
+                    <!-- Las celdas del tablero se llenarán dinámicamente -->
+                    <!-- ...existing code... -->
+                </div>
+                <!-- Contador para la fase de despliegue -->
+                <div class="mt-4">
+                    <p class="text-center">Tiempo restante: <span id="deployment-timer">90</span> segundos</p>
+                    <div class="progress-bar">
+                        <div id="deployment-progress-bar" class="progress"></div>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
     <footer id="instrucciones" class="bg-gray-800 text-white p-6 mt-8">
@@ -70,7 +172,11 @@
             <p class="text-sm">&copy; 2024 Oscar Jaramillo. Todos los derechos reservados.</p>
         </div>
     </footer>
-</body>
+    
+    <!-- Asegúrate de que solo exista un contenedor para el login -->
+    <div id="login-container"></div>
 
-<script type="module" src="script.js"></script>
+    <!-- ...existing scripts... -->
+    <script type="module" src="script.js"></script>
+</body>
 </html>
